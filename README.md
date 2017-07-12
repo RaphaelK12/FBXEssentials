@@ -7,6 +7,8 @@ So could only have them all put together in one take using motion mixer and try 
 
 Project so far can read .fbx file and get frame count
 
+My models biceps are distorted haha will try fix later
+
 Cluster is another name for bone I think lol
 
 Requires Fbx SDK
