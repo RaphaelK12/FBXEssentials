@@ -64,10 +64,10 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 	FbxString typeName = GetAttributeTypeName(pAttribute->GetAttributeType());
 	if(typeName ==  GetAttributeTypeName(fbxsdk::FbxNodeAttribute::eMesh))
 	{
-		FbxMesh* mesh = pNode->GetMesh();
+		FbxMesh*mesh = pNode->GetMesh();
 		printf("MESH MEMORY USAGE: %d\n", mesh->MemoryUsage());
 		printf("MESH DEFORMER COUNT: %d\n", mesh->GetDeformerCount(FbxDeformer::EDeformerType::eSkin));
-		FbxSkin* skin = (FbxSkin*)(mesh->GetDeformer(0, FbxDeformer::EDeformerType::eSkin));
+		FbxSkin*skin = (FbxSkin*)(mesh->GetDeformer(0, FbxDeformer::EDeformerType::eSkin));
 		if(skin)
 		{
 			for (int i = 0; i < skin->GetClusterCount(); i++)
@@ -96,7 +96,7 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 				FbxAnimStack*currAnimStack = FbxAnimStack::Create(pScene, "Stack001");
 				FbxString animStackName = currAnimStack->GetName();
 				FbxString mAnimationName = animStackName.Buffer();
-				printf("StackName: \"%s\"\n", mAnimationName);
+				printf("StackName: %s\n", mAnimationName);
 
 				FbxTime start = pTakeInfo->mLocalTimeSpan.GetStart();
 				FbxTime end = pTakeInfo->mLocalTimeSpan.GetStop();
@@ -196,10 +196,10 @@ int main(int argc, char**argv[])
 			{
 				lTakeInfo = lImporter->GetTakeInfo(i);
 				printf("Animation Stack %d\n", i);
-				printf("Name: "%s\n", lTakeInfo->mName.Buffer());
-				printf("Description: "%s\n", lTakeInfo->mDescription.Buffer());
+				printf("Name: %s\n", lTakeInfo->mName.Buffer());
+				printf("Description: %s\n", lTakeInfo->mDescription.Buffer());
 				//Change the value of the import name if the animation stack should be imported under a different name.
-				printf("Import Name: "%s\n", lTakeInfo->mImportName.Buffer());
+				printf("Import Name: %s\n", lTakeInfo->mImportName.Buffer());
 				//Set the value of the import state to false if the animation stack should be not be imported. 
 				printf("Import State: %s\n", lTakeInfo->mSelect ? "true" : "false");
 			}
