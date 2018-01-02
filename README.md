@@ -5,7 +5,7 @@ A work in progress xD
 
 Project so far can read .fbx file and get frame count
 
-![distortedfbxmodel](https://user-images.githubusercontent.com/30036342/34467624-21357bdc-ef32-11e7-8760-f50fb9bdd076.png)
+![teapot](https://user-images.githubusercontent.com/30036342/34473948-beac1908-efb3-11e7-8c87-7de866e29361.png)
 
 
 Requires Fbx SDK
