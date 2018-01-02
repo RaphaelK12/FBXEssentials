@@ -213,28 +213,27 @@ void display()
 	glMatrixMode(GL_MODELVIEW);     // To operate on model-view matrix
 	// Render a color-cube consisting of 6 quads with different colors
 	glLoadIdentity();                 // Reset the model-view matrix
-	glTranslatef(0.0f, 0.0f, -50.0f);  // Move right and into the screen
+	glTranslatef(0.0f, -20.0f, -75.0f);  // Move right and into the screen
 	
 	//printf("INDICE: %i\n", numIndices);
 
 	glRotatef(objangle, xRotated, yRotated, zRotated);
-	for(int i = 0; i < numIndices - 3; i++)
+	for(int i = 0; i < numIndices - 3; i+=3)
 	{
-		glBegin(GL_TRIANGLES);
-		glNormal3f(normals[i*3+0], normals[i*3+1], normals[i*3+2]); 
+		glBegin(GL_LINES);
+		glNormal3f(normals[i*3+0], normals[i*3+1], normals[i*3+2]);
 		for(int j = i; j <= i + 2; j++)
 		{
 			glVertex3f(vertices[indices[j]].x, vertices[indices[j]].y, vertices[indices[j]].z);
-			glColor3f(0.3f, 0.3f, 0.3f);
-			//printf("DRAWING!\n");
+			glColor3f(1.0f, 1.0f, 1.0f);
 		}
-		glEnd();
 	}
-	//glFlush();
+	glEnd();
+	glFlush();
 	glutSwapBuffers();  // Swap the front and back frame buffers (double buffering)
 
-	objangle += 0.5f;
-	xRotated += 0.3f;
+	objangle += 0.3f;
+	//xRotated += 0.3f;
 	yRotated += 0.3f;
 	zRotated += 0.3f;
 }
@@ -377,7 +376,7 @@ int main(int argc, char**argv)
 void Model::RenderModel()
 {
 	int i, j;
-	for(i = 0; i < numIndices - 3; i++)
+	for(i = 0; i < numIndices - 3; i+=3)
 	{
 		glBegin(GL_TRIANGLES);
 		glNormal3f(normals[i*3+0], normals[i*3+1], normals[i*3+2]); 
