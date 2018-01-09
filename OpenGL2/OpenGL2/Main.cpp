@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <fbxsdk.h>
 #include <iostream>
+#include <Windows.h>
+#include <conio.h>
 using namespace std;
  GLfloat objangle, xRotated, yRotated, zRotated;
 char title[] = "My 3D Model Viewer";
@@ -97,7 +99,7 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 			vertices[numVertices].x=(float)vert.mData[0];
 			vertices[numVertices].y=(float)vert.mData[1];
 			vertices[numVertices++].z=(float)vert.mData[2];
-			printf("MeshVert: x: %f y: %f z: %f\n", vertices[numVertices-1].x, vertices[numVertices-1].y, vertices[numVertices-1].z);
+			//printf("MeshVert: x: %f y: %f z: %f\n", vertices[numVertices-1].x, vertices[numVertices-1].y, vertices[numVertices-1].z);
 		}
 		//================= Get Indices ====================================
 		numIndices = mesh->GetPolygonVertexCount();
@@ -126,71 +128,86 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 				}
 			}
 		}
-
-
-
-		/*
-		////////////////////////////////////////////////////////////////
-		//Get the UV names
 		FbxStringList UVNames;
 		mesh->GetUVSetNames(UVNames);
-		//Get the controlpoints of the mesh
 		FbxVector4*pVertices = mesh->GetControlPoints();
-		//Get the amount of polygons inside this mesh
 		int polygonCount = mesh->GetPolygonCount();
-		//For each polygon inside the mesh
-		////////////////////////////////////////////////////////////////
-		*/
-		
+		////////////////////////////////////////////////////////////////		
 		printf("MESH MEMORY USAGE: %d\n", mesh->MemoryUsage());
-		printf("MESH DEFORMER COUNT: %d\n", mesh->GetDeformerCount(FbxDeformer::EDeformerType::eSkin));
-		FbxSkin*skin = (FbxSkin*)(mesh->GetDeformer(0, FbxDeformer::EDeformerType::eSkin));
-		if(skin)
+		unsigned int numOfDeformers = mesh->GetDeformerCount(FbxDeformer::EDeformerType::eSkin);
+		printf("MESH DEFORMER COUNT: %d\n", numOfDeformers);
+		for(unsigned int deformerIndex = 0; deformerIndex < numOfDeformers; ++deformerIndex)
 		{
-			for (int i = 0; i < skin->GetClusterCount(); i++)
+			FbxSkin*skin = (FbxSkin*)(mesh->GetDeformer(deformerIndex, FbxDeformer::EDeformerType::eSkin));
+			if(skin)
 			{
-				FbxCluster*cluster = skin->GetCluster(i);
-				printf("CLUSTER #%i has %i vertices\n", i, cluster->GetControlPointIndicesCount());
-				FbxString currJointName = cluster->GetLink()->GetName(); 
-				printf("CURRENTJOINT: %s\n", currJointName.Buffer());
-
-				GetNodeGeometryTransform(pNode);
-				//GetNodeWorldTransform(pNode);
-
-				FbxNode*linkedskel = cluster->GetLink();
-				if(linkedskel == NULL)
+				for (int i = 0; i < skin->GetClusterCount(); i++)
 				{
-					printf("Cluster have no Linked Skeleton!\n");
-					continue;
-				}
-				if(linkedskel->GetNodeAttribute()->GetAttributeType() != FbxNodeAttribute::EType::eSkeleton)
-				{
-					printf("Linked Node is not Skeleton Type!\n");
-					continue;
-				}
-				cluster->SetTransformLinkMatrix(linkedskel->EvaluateGlobalTransform());
+					FbxCluster*cluster = skin->GetCluster(i);
+					printf("CLUSTER #%i has %i vertices\n", i, cluster->GetControlPointIndicesCount());
+					FbxString currJointName = cluster->GetLink()->GetName(); 
+					printf("CURRENTJOINT: %s\n", currJointName.Buffer());
 
-				FbxAnimStack*currAnimStack = FbxAnimStack::Create(pScene, "Stack001");
-				FbxString animStackName = currAnimStack->GetName();
-				FbxString mAnimationName = animStackName.Buffer();
-				printf("StackName: %s\n", mAnimationName);
+					FbxNode*linkedskel = cluster->GetLink();
+					if(linkedskel == NULL)
+					{
+						printf("Cluster have no Linked Skeleton!\n");
+						continue;
+					}
+					if(linkedskel->GetNodeAttribute()->GetAttributeType() != FbxNodeAttribute::EType::eSkeleton)
+					{
+						printf("Linked Node is not Skeleton Type!\n");
+						continue;
+					}
 
-				FbxTime start = pTakeInfo->mLocalTimeSpan.GetStart();
-				FbxTime end = pTakeInfo->mLocalTimeSpan.GetStop();
-				float startTime = (float)start.GetSecondDouble();
-				float endTime = (float)end.GetSecondDouble();
-				printf("START: %f\n", startTime);
-				printf("END: %f\n", endTime);
+					// Get the bind pose
+					FbxAMatrix transformMatrix;
+					FbxAMatrix transformLinkMatrix;
+					FbxAMatrix globalBindposeInverseMatrix;
+				
+					cluster->GetTransformMatrix(transformMatrix);
+					cluster->GetTransformLinkMatrix(transformLinkMatrix);
+					globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix *GetNodeWorldTransform(pNode);
 
-				FbxLongLong mAnimationLength = end.GetFrameCount(FbxTime::eFrames30) - start.GetFrameCount(FbxTime::eFrames30) + 1;
-				printf("ANIMATIONLENGTH: %lld\n", mAnimationLength);
-				for(FbxLongLong ii = start.GetFrameCount(FbxTime::eFrames30); ii <= end.GetFrameCount(FbxTime::eFrames30); ii++)
-				{
-					//printf("F: #%d, ", ii);
-					FbxTime currTime;
-					currTime.SetFrame(ii, FbxTime::eFrames30);
-					FbxAMatrix currentTransformOffset = pNode->EvaluateGlobalTransform(currTime) * GetNodeWorldTransform(pNode);
-					FbxAMatrix mat = currentTransformOffset.Inverse() * cluster->GetLink()->EvaluateGlobalTransform(currTime);
+					int*pVertexIndices = cluster->GetControlPointIndices();
+					double*pVertexWeights = cluster->GetControlPointWeights();
+					//Iterate through all the vertices, which are affected by the bone
+					_getch();
+					int ncVertexIndices = cluster->GetControlPointIndicesCount();
+					for(int iBoneVertexIndex = 0; iBoneVertexIndex < ncVertexIndices; iBoneVertexIndex++)
+					{
+						printf("Loop: %d - ", iBoneVertexIndex);
+						//vertex
+						int niVertex = pVertexIndices[iBoneVertexIndex];
+						printf("nV: %d - ", niVertex);
+						//weight
+						float fWeight = (float)pVertexWeights[iBoneVertexIndex];
+						printf("fW: %f\n", fWeight);
+					}
+					cluster->SetTransformLinkMatrix(linkedskel->EvaluateGlobalTransform());
+
+					FbxAnimStack*currAnimStack = FbxAnimStack::Create(pScene, "Stack001");
+					FbxString animStackName = currAnimStack->GetName();
+					FbxString mAnimationName = animStackName.Buffer();
+					printf("StackName: %s\n", mAnimationName);
+
+
+					FbxTime start = pTakeInfo->mLocalTimeSpan.GetStart();
+					FbxTime end = pTakeInfo->mLocalTimeSpan.GetStop();
+					float startTime = (float)start.GetSecondDouble();
+					float endTime = (float)end.GetSecondDouble();
+					printf("START: %f END: %f\n", startTime, endTime);
+
+					FbxLongLong mAnimationLength = end.GetFrameCount(FbxTime::eFrames30) - start.GetFrameCount(FbxTime::eFrames30) + 1;
+					//printf("ANIMATIONLENGTH: %lld\n", mAnimationLength);
+					for(FbxLongLong ii = start.GetFrameCount(FbxTime::eFrames30); ii <= end.GetFrameCount(FbxTime::eFrames30); ii++)
+					{
+						//printf("F: #%d, ", ii);
+						FbxTime currTime;
+						currTime.SetFrame(ii, FbxTime::eFrames30);
+						FbxAMatrix currentTransformOffset = pNode->EvaluateGlobalTransform(currTime) * GetNodeWorldTransform(pNode);
+						FbxAMatrix matr = currentTransformOffset.Inverse() * cluster->GetLink()->EvaluateGlobalTransform(currTime);
+					}
 				}
 			}
 		}
@@ -213,14 +230,12 @@ void display()
 	glMatrixMode(GL_MODELVIEW);     // To operate on model-view matrix
 	// Render a color-cube consisting of 6 quads with different colors
 	glLoadIdentity();                 // Reset the model-view matrix
-	glTranslatef(0.0f, -20.0f, -75.0f);  // Move right and into the screen
-	
-	//printf("INDICE: %i\n", numIndices);
+	glTranslatef(0.0f, -10.0f, -65.0f);  // Move right and into the screen
 
 	glRotatef(objangle, xRotated, yRotated, zRotated);
 	for(int i = 0; i < numIndices - 3; i+=3)
 	{
-		glBegin(GL_LINES);
+		glBegin(GL_TRIANGLES);
 		glNormal3f(normals[i*3+0], normals[i*3+1], normals[i*3+2]);
 		for(int j = i; j <= i + 2; j++)
 		{
@@ -230,7 +245,7 @@ void display()
 	}
 	glEnd();
 	glFlush();
-	glutSwapBuffers();  // Swap the front and back frame buffers (double buffering)
+	glutSwapBuffers(); //Swap the front and back frame buffers(double buffering)
 
 	objangle += 0.3f;
 	//xRotated += 0.3f;
@@ -244,35 +259,26 @@ void timer(int value)
 }
 void reshape(GLsizei width, GLsizei height)
 {
-	//GLsizei for non-negative integer
-	//Compute aspect ratio of the new window
-	if (height == 0) height = 1; //To prevent divide by 0
-	GLfloat aspect = (GLfloat)width / (GLfloat)height;
-	glViewport(0, 0, width, height); //Set the viewport to cover the new window
-	//Set the aspect ratio of the clipping volume to match the viewport
+	if(height == 0) height = 1;
+	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION); //To operate on the Projection matrix
 	glLoadIdentity(); //Reset
-	gluPerspective(45.0f, aspect, 0.1f, 100.0f); //Enable perspective projection with fovy, aspect, zNear and zFar
+	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 }
-
 void PrintNode(FbxNode*pNode, FbxScene*pScene, FbxTakeInfo*pTakeInfo)
 {
 	const char*lNodeName = pNode->GetName();
 	FbxDouble3 translation = pNode->LclTranslation.Get();
 	FbxDouble3 rotaion = pNode->LclRotation.Get();
 	FbxDouble3 scaling = pNode->LclScaling.Get();
-	printf("Node Name: %s\nTranslation: %f, %f, %f\nRotation: %f, %f, %f\nScale= %f, %f, %f\n",
+	printf("Node Name: %s\nTranslation: %f, %f, %f\nRotation: %f, %f, %f\n",//Scale= %f, %f, %f\n",
 		lNodeName, translation[0], translation[1], translation[2],
 		rotaion[0], rotaion[1], rotaion[2],
 		scaling[0], scaling[1], scaling[2]);
 	for(int i = 0; i < pNode->GetNodeAttributeCount(); i++)
-	{
 		PrintAttribute(pNode->GetNodeAttributeByIndex(i), pNode, pScene, pTakeInfo);
-	}
 	for(int j = 0; j < pNode->GetChildCount(); j++)
-	{
 		PrintNode(pNode->GetChild(j), pScene, pTakeInfo);
-	}
 }
 int main(int argc, char**argv)
 {
@@ -290,11 +296,11 @@ int main(int argc, char**argv)
 		//puts(filestr);
 		printf("FBX File: %s\n", pFilestr);
 
-		FbxManager *lSdkManager = FbxManager::Create();
-		FbxScene *lScene = FbxScene::Create(lSdkManager, "SceneName");
-		FbxNode *lRootNode = lScene->GetRootNode();
+		FbxManager*lSdkManager = FbxManager::Create();
+		FbxScene*lScene = FbxScene::Create(lSdkManager, "SceneName");
+		FbxNode*lRootNode = lScene->GetRootNode();
 		FbxDocument*lDoc = lScene;
-		FbxIOSettings *lioSettings = FbxIOSettings::Create(lSdkManager, IOSROOT);
+		FbxIOSettings*lioSettings = FbxIOSettings::Create(lSdkManager, IOSROOT);
 		lSdkManager->SetIOSettings(lioSettings);
 
 		int lFileMajor, lFileMinor, lFileRevision, lSDKMajor, lSDKMinor, lSDKRevision;
@@ -354,37 +360,19 @@ int main(int argc, char**argv)
 			for(int ii = 0; ii < lRootNode->GetChildCount(); ii++)
 			{
 				PrintNode(lRootNode->GetChild(ii), lScene, lTakeInfo);
-
-				glutInit(&argc, argv); //Initialize GLUT
-				glutInitDisplayMode(GLUT_DOUBLE); //Enable double buffered mode
-				glutInitWindowSize(640, 480); //Set the window's initial width & height
-				glutInitWindowPosition(50, 50); //Position the window's initial top-left corner
-				glutCreateWindow(title); //Create window with the given title
-				glutDisplayFunc(display); //Register callback handler for window re-paint event
-				glutReshapeFunc(reshape);
-				initGL(); //Our own OpenGL initialization
-				glutTimerFunc(0, timer, 0); //First timer call immediately [NEW]
-				glutMainLoop();
 			}
+			glutInit(&argc, argv);
+			glutInitDisplayMode(GLUT_DOUBLE); //Enable double buffered mode
+			glutInitWindowSize(640, 480);
+			glutInitWindowPosition(5, 5);
+			glutCreateWindow(title);
+			glutDisplayFunc(display);
+			glutReshapeFunc(reshape);
+			initGL();
+			glutTimerFunc(0, timer, 0);
+			glutMainLoop();
 		}
 		lSdkManager->Destroy();
 	}
 	return 0;
 }
-
-/*
-void Model::RenderModel()
-{
-	int i, j;
-	for(i = 0; i < numIndices - 3; i+=3)
-	{
-		glBegin(GL_TRIANGLES);
-		glNormal3f(normals[i*3+0], normals[i*3+1], normals[i*3+2]); 
-		for(j = i; j <= i + 2; j++)
-		{
-			glVertex3f(vertices[indices[j]].x,vertices[indices[j]].y,vertices[indices[j]].z);
-		}
-		glEnd();
-	}
-}
-*/
