@@ -23,6 +23,7 @@ int refreshMS = 15; //15ms = 60fps
 GLfloat objangle, xRotated, yRotated, zRotated;
 int numVertices = 0;
 int numIndices = 0;
+int polygonCount;
 int*indices;
 float*normals;
 
@@ -158,7 +159,7 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 		*/
 
 		/////////////////////////////////////////////////////////////////
-		//int polygonCount = mesh->GetPolygonCount();
+		polygonCount = mesh->GetPolygonCount();
 		FbxVector4* controlPoints = mesh->GetControlPoints();
 		int controlPointCount = mesh->GetControlPointsCount();
 		int vertexID = 0;
@@ -215,7 +216,7 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 						mapcoord[MAX_VERTICES].u = (float)uv.mData[0];
 						mapcoord[MAX_VERTICES].v = (float)uv.mData[1];
 
-						printf("UV: %f and %f\n", uv.mData[0], uv.mData[1]);
+						printf("UV: %f and %f\n", mapcoord[MAX_VERTICES].u, mapcoord[MAX_VERTICES].v);
 						//_getch();
 					}
 				}
@@ -328,7 +329,7 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 
 					FbxAnimLayer* pAnimLayer = FbxAnimLayer::Create(pScene, "Layer0");
 					currAnimStack->AddMember(pAnimLayer);
-					//Get the camera’s curve node for local translation.
+					//Get the cameraâ€™s curve node for local translation.
 					FbxAnimCurveNode* myAnimCurveNodeRot = pNode->LclRotation.GetCurveNode(pAnimLayer, true);
 					//create curve nodes
 					FbxAnimCurve* myRotXCurve = myAnimCurveNodeRot->GetCurve(0);
@@ -361,27 +362,25 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 }
 void initGL()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //Set background color to black and opaque
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClearDepth(1.0f); //Set background depth to farthest
 	glEnable(GL_DEPTH_TEST); //Enable depth testing for z-culling
 	glDepthFunc(GL_LEQUAL); //Set the type of depth-test
-	glShadeModel(GL_SMOOTH); //Enable smooth shading
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); //Nice perspective corrections
+	glShadeModel(GL_SMOOTH);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); //Nicest perspective corrections
 	
+	/*
 	glEnable(GL_TEXTURE_2D);
     id_texture=LoadBMP("texture.bmp");
-	if(id_texture==-1)
-	{
-		getchar();
-	}
+	if(id_texture==-1)getchar();
+	*/
 }
 void display()
 {
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
-	glMatrixMode(GL_MODELVIEW); //To operate on model-view matrix
-	//Render a color-cube consisting of 6 quads with different colors
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity(); //Reset the model-view matrix
-	glTranslatef(0.0f, -10.0f, -65.0f); //Move right and into the screen
+	glTranslatef(0.0f, 0.0f, -100.0f);
 
 	/*
 	if(id_texture!=-1)
@@ -399,31 +398,14 @@ void display()
 	for(int i = 0; i < numIndices - 3; i+=3)
 	{
 		glBegin(GL_TRIANGLES);
+		glColor3f(0.0f, 1.0f, 1.0f);
 		glNormal3f(normals[i*3+0], normals[i*3+1], normals[i*3+2]);
 		for(int j = i; j <= i + 2; j++)
 		{
-			if(j == i)
-			{
-				//printf("HAHAHAHAHA\n");
-				glTexCoord2f(mapcoord[polygon[j].a].u,
-					mapcoord[polygon[j].a].v);
-			}
-			if(j == i+1)
-			{
-				//printf("NOOOOOOOOOOOOOO\n");
-				glTexCoord2f(mapcoord[polygon[j].b].u,
-					mapcoord[polygon[j].b].v);
-			}
-			if(j == i+2)
-			{
-				//printf("ASDF\n");
-				glTexCoord2f(mapcoord[polygon[j].c].u,
-					mapcoord[polygon[j].c].v);
-			}
+			 glTexCoord2f(mapcoord[j].u, mapcoord[j].v);
+			 printf("TEST: %d MAP: %f - %f\n", j, mapcoord[j].u, mapcoord[j].v);
+
 			glVertex3f(vertices[indices[j]].x, vertices[indices[j]].y, vertices[indices[j]].z);
-			//glColor3f(1.0f, 1.0f, 1.0f);
-			//printf("J = %d\n", j);
-			//_getch();
 		}
 	}
 	glEnd();
@@ -446,7 +428,7 @@ void reshape(GLsizei width, GLsizei height)
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION); //To operate on the Projection matrix
 	glLoadIdentity(); //Reset
-	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 1000.0f);
 }
 void PrintNode(FbxNode*pNode, FbxScene*pScene, FbxTakeInfo*pTakeInfo)
 {
@@ -508,7 +490,6 @@ int main(int argc, char**argv)
 			exit(-1);
 		}
 		printf("FBX file format version for this FBX SDK is %d.%d.%d\n", lSDKMajor, lSDKMinor, lSDKRevision);
-
 		int lAnimStackCount = lImporter->GetAnimStackCount();
 		FbxTakeInfo*lTakeInfo = lImporter->GetTakeInfo(lAnimStackCount);
 		printf("Number of Animation Stacks: %d\n", lAnimStackCount);
