@@ -27,6 +27,7 @@ int polygonCount;
 int*indices;
 float*normals;
 
+
 FbxString GetAttributeTypeName(FbxNodeAttribute::EType type)
 {
 	switch(type)
@@ -100,7 +101,7 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 			vertices[numVertices].x=(float)vert.mData[0];
 			vertices[numVertices].y=(float)vert.mData[1];
 			vertices[numVertices++].z=(float)vert.mData[2];
-			//printf("MeshVert: x: %f y: %f z: %f\n", vertices[numVertices-1].x, vertices[numVertices-1].y, vertices[numVertices-1].z);
+			printf("MeshVert: x: %f y: %f z: %f\n", vertices[numVertices-1].x, vertices[numVertices-1].y, vertices[numVertices-1].z);
 		}
 		//================= Get Indices ====================================
 		numIndices = mesh->GetPolygonVertexCount();
@@ -168,9 +169,11 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 
 		for(int polygon = 0; polygon < mesh->GetPolygonCount(); polygon++)
 		{
+			//printf("LOOPTEST1: %d\n", polygon);
 			//int polyVertCount = mesh->GetPolygonSize(polygon);
 			for(int polyVert = 0; polyVert < mesh->GetPolygonSize(polygon); polyVert++)
 			{
+				//printf("LOOPTEST2: %d\n", polyVert);
 				//CMesh::TUniqueVertex uniqueVert;
 				int cpIndex = mesh->GetPolygonVertex(polygon, polyVert);
 				// Grab our CP index as well our position information
@@ -190,7 +193,7 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 
 				// Grab UVs
 				int uvElementCount = mesh->GetElementUVCount();
-				//printf("CRAP: %d\n", uvElementCount);
+				//printf("uvElementCount: %d\n", uvElementCount);
 				for(int uvElement = 0; uvElement < mesh->GetElementUVCount(); uvElement++)
 				{
 					FbxGeometryElementUV* geomElementUV = mesh->GetElementUV(uvElement);
@@ -213,15 +216,24 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 					{
 						FbxVector2 uv = geomElementUV->GetDirectArray().GetAt(directIndex);
 						//uniqueVert.m_UVs = XMFLOAT2( (float)uv.mData[0], (float)uv.mData[1]);
-						mapcoord[MAX_VERTICES].u = (float)uv.mData[0];
-						mapcoord[MAX_VERTICES].v = (float)uv.mData[1];
-
-						printf("UV: %f and %f\n", mapcoord[MAX_VERTICES].u, mapcoord[MAX_VERTICES].v);
-						//_getch();
+						mapcoords.u[polygon][polyVert] = (float)uv.mData[0];
+						mapcoords.v[polygon][polyVert] = (float)uv.mData[1];
+						printf("Loop: %d:%d UV: %f and %f\n", polygon, polyVert, mapcoords.u[polygon][polyVert], mapcoords.v[polygon][polyVert]);
 					}
 				}
 			}
 		}
+		
+		/*
+		for(int asdf=0;asdf<35;asdf++)
+		{
+			for(int qwer=0;qwer<3;qwer++)
+			{
+			printf("CRAP: %f and %f\n", mapcoords.u[asdf][qwer], mapcoords.v[asdf][qwer]);
+			}
+		}
+		_getch();
+		*/
 
 		/*
 		//GET POLYGONS
@@ -288,7 +300,6 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 						printf("Linked Node is not Skeleton Type!\n");
 						continue;
 					}
-
 					// Get the bind pose
 					FbxAMatrix transformMatrix;
 					FbxAMatrix transformLinkMatrix;
@@ -325,7 +336,6 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 					float startTime = (float)start.GetSecondDouble();
 					float endTime = (float)end.GetSecondDouble();
 					printf("START: %f END: %f\n", startTime, endTime);
-
 
 					FbxAnimLayer* pAnimLayer = FbxAnimLayer::Create(pScene, "Layer0");
 					currAnimStack->AddMember(pAnimLayer);
@@ -369,20 +379,20 @@ void initGL()
 	glShadeModel(GL_SMOOTH);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); //Nicest perspective corrections
 	
-	/*
 	glEnable(GL_TEXTURE_2D);
     id_texture=LoadBMP("texture.bmp");
 	if(id_texture==-1)getchar();
-	*/
 }
+
+int looptest = 0;
+int crap = 0;
+
 void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity(); //Reset the model-view matrix
 	glTranslatef(0.0f, 0.0f, -100.0f);
-
-	/*
 	if(id_texture!=-1)
 	{
 		glBindTexture(GL_TEXTURE_2D, id_texture); //We set the active texture 
@@ -392,21 +402,27 @@ void display()
 	{
 		glDisable(GL_TEXTURE_2D); //Texture mapping OFF
 	}
-	*/
-
+	looptest = 0;
 	glRotatef(objangle, xRotated, yRotated, zRotated);
-	for(int i = 0; i < numIndices - 3; i+=3)
+	for(int i = 0; i <= numIndices - 3; i+=3)
 	{
 		glBegin(GL_TRIANGLES);
-		glColor3f(0.0f, 1.0f, 1.0f);
+		//glColor3f(1.0f, 1.0f, 1.0f);
 		glNormal3f(normals[i*3+0], normals[i*3+1], normals[i*3+2]);
 		for(int j = i; j <= i + 2; j++)
 		{
-			 glTexCoord2f(mapcoord[j].u, mapcoord[j].v);
-			 printf("TEST: %d MAP: %f - %f\n", j, mapcoord[j].u, mapcoord[j].v);
+			//printf("LOOP: %d-%d\n", i, j);
+			if(crap == 3)crap = 0;
+
+			glTexCoord2f(mapcoords.u[looptest][crap], mapcoords.v[looptest][crap]);
+			printf("LOOP %d-%d UVMAP: %f - %f\n", looptest, crap,
+			mapcoords.u[looptest][crap], mapcoords.v[looptest][crap]);
 
 			glVertex3f(vertices[indices[j]].x, vertices[indices[j]].y, vertices[indices[j]].z);
+			//printf("Vertex X: %f Y: %f Z: %f\n", vertices[indices[j]].x, vertices[indices[j]].y, vertices[indices[j]].z);
+			crap++;
 		}
+		looptest++;
 	}
 	glEnd();
 	glFlush();
@@ -426,9 +442,9 @@ void reshape(GLsizei width, GLsizei height)
 {
 	if(height == 0) height = 1;
 	glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION); //To operate on the Projection matrix
-	glLoadIdentity(); //Reset
-	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 1000.0f);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(45.0f, (GLfloat)width/(GLfloat)height, 0.1f, 1000.0f);
 }
 void PrintNode(FbxNode*pNode, FbxScene*pScene, FbxTakeInfo*pTakeInfo)
 {
@@ -525,6 +541,7 @@ int main(int argc, char**argv)
 			{
 				PrintNode(lRootNode->GetChild(ii), lScene, lTakeInfo);
 			}
+			_getch();
 			glutInit(&argc, argv);
 			glutInitDisplayMode(GLUT_DOUBLE); //Enable double buffered mode
 			glutInitWindowSize(640, 480);
