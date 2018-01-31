@@ -346,7 +346,7 @@ void PrintAttribute(FbxNodeAttribute*pAttribute, FbxNode*pNode, FbxScene*pScene,
 
 					FbxAnimLayer* pAnimLayer = FbxAnimLayer::Create(pScene, "Layer0");
 					currAnimStack->AddMember(pAnimLayer);
-					//Get the camera’s curve node for local translation.
+					//Get the cameraâ€™s curve node for local translation.
 					FbxAnimCurveNode* myAnimCurveNodeRot = pNode->LclRotation.GetCurveNode(pAnimLayer, true);
 					//create curve nodes
 					FbxAnimCurve* myRotXCurve = myAnimCurveNodeRot->GetCurve(0);
@@ -460,13 +460,13 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, 1);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-100.0f,-100.0f, -20.0f);
+	glVertex3f(-20.0f,-20.0f, -20.0f);
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-100.0f,100.0f, -20.0f);
+	glVertex3f(-20.0f,20.0f, -20.0f);
 	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f( 100.0f, 100.0f, -20.0f);
+	glVertex3f(20.0f, 20.0f, -20.0f);
 	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(100.0f, -100.0f, -20.0f);
+	glVertex3f(20.0f, -20.0f, -20.0f);
 	glEnd();
 	glFlush();
 	glPopMatrix();
@@ -475,13 +475,13 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, 2);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-100.0f,-100.0f, -30.0f);
+	glVertex3f(-100.0f,-100.0f, -50.0f);
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-100.0f,100.0f, -30.0f);
+	glVertex3f(-100.0f,100.0f, -50.0f);
 	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f( 100.0f, 100.0f, -30.0f);
+	glVertex3f( 100.0f, 100.0f, -50.0f);
 	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(100.0f, -100.0f, -30.0f);
+	glVertex3f(100.0f, -100.0f, -50.0f);
 	glEnd();
 	glFlush();
 	glPopMatrix();
@@ -490,13 +490,13 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, 3);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-100.0f,-100.0f, -40.0f);
+	glVertex3f(-100.0f,-100.0f, -55.0f);
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-100.0f,100.0f, -40.0f);
+	glVertex3f(-100.0f,100.0f, -55.0f);
 	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f( 100.0f, 100.0f, -40.0f);
+	glVertex3f( 100.0f, 100.0f, -55.0f);
 	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(100.0f, -100.0f, -40.0f);
+	glVertex3f(100.0f, -100.0f, -55.0f);
 	glEnd();
 	glFlush();
 	glPopMatrix();
