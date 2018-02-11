@@ -1,0 +1,16 @@
+﻿  Main.cpp
+Main.cpp(245): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(246): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(247): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(250): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(251): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(252): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(255): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(256): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(257): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(399): warning C4101: 'height' : unreferenced local variable
+Main.cpp(399): warning C4101: 'width' : unreferenced local variable
+Main.cpp(400): warning C4101: 'hasAlpha' : unreferenced local variable
+  Generating code
+  Finished generating code
+  OpenGL9.vcxproj -> C:\Users\User\documents\visual studio 2012\Projects\OpenGL9\Release\OpenGL9.exe
