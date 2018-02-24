@@ -1,0 +1,25 @@
+﻿  Main.cpp
+Main.cpp(116): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(117): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(118): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(124): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(125): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(126): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(137): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(138): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(139): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(165): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(166): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(167): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(174): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(175): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(176): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(182): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(183): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(184): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(401): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(402): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+Main.cpp(403): warning C4244: '=' : conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+  Generating code
+  Finished generating code
+  OpenGL10.vcxproj -> C:\Users\User\documents\visual studio 2012\Projects\OpenGL10\Release\OpenGL10.exe
