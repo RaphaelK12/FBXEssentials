@@ -1,5 +1,5 @@
 # FBXEssentials
-Now has textures mapped on GLSL project!
+Now loads indexed models!
 
 https://github.com/buttburger/FBXEssentials/tree/master/OpenGL26
 
